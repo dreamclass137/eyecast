@@ -17,10 +17,18 @@ if ($color_id == 0 || $color_name == '' || $color_code == '') {
     exit;
 }
 
-$stmt = $conn->prepare("UPDATE colour_tbl SET color_name=?, color_code=? WHERE color_id=?");
-$stmt->bind_param("ssi", $color_name, $color_code, $color_id);
+// Escape values (important)
+$color_id = intval($color_id);
+$color_name = mysqli_real_escape_string($conn, $color_name);
+$color_code = mysqli_real_escape_string($conn, $color_code);
 
-if ($stmt->execute()) {
+// SQL UPDATE query (NO prepare)
+$sql = "UPDATE colour_tbl 
+        SET color_name = '$color_name', 
+            color_code = '$color_code' 
+        WHERE color_id = $color_id";
+
+if (mysqli_query($conn, $sql)) {
     echo json_encode(["status" => 200, "message" => "Colour updated successfully"]);
 } else {
     echo json_encode(["status" => 500, "message" => "Update failed"]);

@@ -13,14 +13,19 @@ if ($color_name == '' || $color_code == '') {
     exit;
 }
 
-$stmt = $conn->prepare("INSERT INTO colour_tbl (color_name, color_code) VALUES (?, ?)");
-$stmt->bind_param("ss", $color_name, $color_code);
+// Escape values to avoid SQL injection
+$color_name = mysqli_real_escape_string($conn, $color_name);
+$color_code = mysqli_real_escape_string($conn, $color_code);
 
-if ($stmt->execute()) {
+// SQL INSERT query (no prepare)
+$sql = "INSERT INTO colour_tbl (color_name, color_code) 
+        VALUES ('$color_name', '$color_code')";
+
+if (mysqli_query($conn, $sql)) {
     echo json_encode([
         "status" => 200,
         "message" => "Colour added successfully",
-        "color_id" => $stmt->insert_id
+        "color_id" => mysqli_insert_id($conn)
     ]);
 } else {
     echo json_encode(["status" => 500, "message" => "Insert failed"]);

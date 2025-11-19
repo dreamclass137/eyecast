@@ -9,28 +9,28 @@ if (empty($data['product_id'])) {
     exit;
 }
 
-$product_id = $data['product_id'];
+$product_id = intval($data['product_id']);
 unset($data['product_id']);
 
-$fields = "";
-$params = [];
-$types = "";
-
-foreach ($data as $key => $value) {
-    $fields .= "$key = ?, ";
-    $params[] = $value;
-    $types .= "s"; // all string type
+if (empty($data)) {
+    echo json_encode(["status" => 400, "message" => "No fields to update"]);
+    exit;
 }
 
-$fields = rtrim($fields, ", ");
-$sql = "UPDATE product_tbl SET $fields WHERE product_id = ?";
-$params[] = $product_id;
-$types .= "i";
+$updateFields = [];
 
-$stmt = $conn->prepare($sql);
-$stmt->bind_param($types, ...$params);
+// Escape + prepare dynamic SQL fields
+foreach ($data as $key => $value) {
+    $safeKey = mysqli_real_escape_string($conn, $key);
+    $safeValue = mysqli_real_escape_string($conn, $value);
+    $updateFields[] = "$safeKey = '$safeValue'";
+}
 
-if ($stmt->execute()) {
+$updateSQL = implode(", ", $updateFields);
+
+$sql = "UPDATE product_tbl SET $updateSQL WHERE product_id = $product_id";
+
+if (mysqli_query($conn, $sql)) {
     echo json_encode(["status" => 200, "message" => "Product updated successfully"]);
 } else {
     echo json_encode(["status" => 500, "message" => "Update failed"]);

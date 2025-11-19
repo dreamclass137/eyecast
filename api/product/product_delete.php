@@ -9,12 +9,13 @@ if (empty($data['product_id'])) {
     exit;
 }
 
-$id = $data['product_id'];
+// Secure integer ID
+$product_id = intval($data['product_id']);
 
-$stmt = $conn->prepare("DELETE FROM product_tbl WHERE product_id = ?");
-$stmt->bind_param("i", $id);
+// SQL DELETE query
+$sql = "DELETE FROM product_tbl WHERE product_id = $product_id";
 
-if ($stmt->execute()) {
+if (mysqli_query($conn, $sql)) {
     echo json_encode(["status" => 200, "message" => "Product deleted successfully"]);
 } else {
     echo json_encode(["status" => 500, "message" => "Delete failed"]);

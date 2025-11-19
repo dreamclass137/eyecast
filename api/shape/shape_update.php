@@ -17,10 +17,17 @@ if ($shape_id == 0 || $s_name == '') {
     exit;
 }
 
-$stmt = $conn->prepare("UPDATE shape_tbl SET s_name = ?, status = ? WHERE shape_id = ?");
-$stmt->bind_param("ssi", $s_name, $status, $shape_id);
+// Escape values for safety
+$shape_id = intval($shape_id);
+$s_name   = mysqli_real_escape_string($conn, $s_name);
+$status   = mysqli_real_escape_string($conn, $status);
 
-if ($stmt->execute()) {
+// SQL Query (no prepare)
+$sql = "UPDATE shape_tbl 
+        SET s_name = '$s_name', status = '$status' 
+        WHERE shape_id = $shape_id";
+
+if (mysqli_query($conn, $sql)) {
     echo json_encode(["status" => 200, "message" => "Shape updated successfully"]);
 } else {
     echo json_encode(["status" => 500, "message" => "Update failed"]);

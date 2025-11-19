@@ -15,10 +15,13 @@ if ($shape_id == 0) {
     exit;
 }
 
-$stmt = $conn->prepare("DELETE FROM shape_tbl WHERE shape_id = ?");
-$stmt->bind_param("i", $shape_id);
+// Convert to integer (security)
+$shape_id = intval($shape_id);
 
-if ($stmt->execute()) {
+// SQL DELETE Query (NO prepare)
+$sql = "DELETE FROM shape_tbl WHERE shape_id = $shape_id";
+
+if (mysqli_query($conn, $sql)) {
     echo json_encode(["status" => 200, "message" => "Shape deleted successfully"]);
 } else {
     echo json_encode(["status" => 500, "message" => "Delete failed"]);

@@ -4,6 +4,7 @@ include '../../connection.php';
 
 $data = json_decode(file_get_contents("php://input"), true);
 
+// Required fields
 $required = ['category_id','shape_id','title','price','status'];
 
 foreach($required as $field){
@@ -13,41 +14,47 @@ foreach($required as $field){
     }
 }
 
+// Escape + secure values
+$category_id = intval($data['category_id']);
+$shape_id    = intval($data['shape_id']);
+$title       = mysqli_real_escape_string($conn, $data['title']);
+$description = mysqli_real_escape_string($conn, $data['description'] ?? '');
+$gender      = mysqli_real_escape_string($conn, $data['gender'] ?? '');
+$price       = floatval($data['price']);
+$size        = mysqli_real_escape_string($conn, $data['size'] ?? '');
+$status      = mysqli_real_escape_string($conn, $data['status']);
+
 // Check category exists
-$cat = $conn->query("SELECT category_id FROM category_tbl WHERE category_id = ".$data['category_id']);
+$cat = $conn->query("SELECT category_id FROM category_tbl WHERE category_id = $category_id");
 if($cat->num_rows == 0){
     echo json_encode(["status"=>400,"message"=>"Invalid category_id"]);
     exit;
 }
 
 // Check shape exists
-$shape = $conn->query("SELECT shape_id FROM shape_tbl WHERE shape_id = ".$data['shape_id']);
+$shape = $conn->query("SELECT shape_id FROM shape_tbl WHERE shape_id = $shape_id");
 if($shape->num_rows == 0){
     echo json_encode(["status"=>400,"message"=>"Invalid shape_id"]);
     exit;
 }
 
-
-$stmt = $conn->prepare("
+// SQL INSERT Query
+$sql = "
     INSERT INTO product_tbl 
     (category_id, shape_id, title, description, gender, price, size, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-");
+    VALUES (
+        $category_id,
+        $shape_id,
+        '$title',
+        '$description',
+        '$gender',
+        $price,
+        '$size',
+        '$status'
+    )
+";
 
-$stmt->bind_param("iisssdss",
-    $data['category_id'],
-    $data['shape_id'],
-    $data['title'],
-    $data['description'],
-    $data['gender'],
-    $data['price'],
-    $data['size'],
-    $data['status']
-);
-
-
-
-if($stmt->execute()){
+if(mysqli_query($conn, $sql)){
     echo json_encode(["status"=>200,"message"=>"Product added successfully"]);
 } else {
     echo json_encode(["status"=>500,"message"=>"Database error"]);
