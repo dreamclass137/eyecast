@@ -70,31 +70,33 @@ $product_result = mysqli_query($conn, $sql);
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Adminto | Manage Product</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Adminto | Manage Product</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+        <meta content="Coderthemes" name="author" />
+        <!-- App favicon -->
+        <link rel="shortcut icon" href="assets/images/favicon.ico">
+        <!-- Theme Config Js -->
+        <script src="assets/js/config.js"></script>
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <!-- Vendor css -->
+        <link href="assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Theme CSS -->
-    <script src="assets/js/config.js"></script>
-    <link href="assets/css/vendor.min.css" rel="stylesheet" />
-    <link href="assets/css/app.min.css" rel="stylesheet" id="app-style" />
-    <link href="assets/css/icons.min.css" rel="stylesheet" />
-
-    <!-- Datatables -->
-    <link href="assets/vendor/datatables/dataTables.bootstrap5.min.css" rel="stylesheet" />
-    <link href="assets/vendor/datatables/responsive.bootstrap5.min.css" rel="stylesheet" />
-
-    <!-- SweetAlert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <!-- App css -->
+        <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" id="app-style" />
+        <!-- Sweet alert -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <!-- Icons css -->
+        <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+        <!-- Datatables css -->
+        <link href="assets/vendor/datatables/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/fixedColumns.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/fixedHeader.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <!-- Font Awseome cdn -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
         .switch { position: relative; display: inline-block; width: 32px; height: 16px; }

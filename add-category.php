@@ -9,6 +9,7 @@ $edit_id = 0;
 $categoryErrorMessage = ''; // For inline PHP errors
 
 // Check if edit ID is passed
+
 if (isset($_GET['edit_id'])) {
     $edit_id = intval($_GET['edit_id']);
     $edit_sql = "SELECT * FROM category_tbl WHERE category_id = $edit_id LIMIT 1";
@@ -25,8 +26,9 @@ if (isset($_GET['edit_id'])) {
 }
 
 // Handle form submission
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $category_name = trim(mysqli_real_escape_string($conn, $_POST['title'] ?? ''));
+    $category_name = trim(mysqli_real_escape_string($conn, $_POST['c_name'] ?? ''));
     $status = trim(mysqli_real_escape_string($conn, $_POST['status'] ?? ''));
     $edit_id = intval($_POST['edit_id'] ?? 0);
 
@@ -34,11 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = 'Please fill in all fields!';
         $message_type = 'warning';
     } else {
-        // Check for duplicate category
-        $check_sql = "SELECT * FROM category_tbl WHERE c_name = '$category_name'";
-        if ($edit_id > 0) {
-            $check_sql .= " AND category_id != $edit_id";
-        }
+        // Perfect Duplicate Check
+        $check_sql = "SELECT 1 FROM category_tbl WHERE c_name='$category_name' AND category_id != $edit_id LIMIT 1";
+
         $check_result = mysqli_query($conn, $check_sql);
 
         if ($check_result && mysqli_num_rows($check_result) > 0) {
@@ -78,15 +78,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-        <title>Adminto | Add Product</title>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <title>Adminto | Add Category</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
         <meta content="Coderthemes" name="author" />
-
         <!-- App favicon -->
         <link rel="shortcut icon" href="assets/images/favicon.ico">
-
         <!-- Theme Config Js -->
         <script src="assets/js/config.js"></script>
 
@@ -95,10 +92,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- App css -->
         <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" id="app-style" />
-
+        <!-- Sweet alert -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <!-- Icons css -->
         <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-		
+        <!-- Datatables css -->
+        <link href="assets/vendor/datatables/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/fixedColumns.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/fixedHeader.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <!-- Font Awseome cdn -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 		<style>
 		/* Error style */
 		.input-error {
@@ -159,14 +165,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 								<!-- Category Name -->
 								<div class="mb-3">
 									<label for="c_name" class="form-label">Category Name</label>
-									<input type="text" class="form-control" id="c_name" name="title" value="<?= htmlspecialchars($category_name) ?>">
+									<input type="text" class="form-control" id="c_name" name="c_name" value="<?= htmlspecialchars($category_name) ?>" required>
 									<div class="error-message" id="categoryNameError"><?= $categoryErrorMessage ?></div>
 								</div>
 
 								<!-- Status -->
 								<div class="mb-3">
 									<label for="statusSelect" class="form-label">Status</label>
-									<select name="status" id="statusSelect" class="form-select">
+									<select name="status" id="statusSelect" class="form-select" required>
 										<option value="" hidden>Select Status</option>
 										<option value="Active" <?= $status === 'Active' ? 'selected' : '' ?>>Active</option>
 										<option value="Inactive" <?= $status === 'Inactive' ? 'selected' : '' ?>>Inactive</option>
@@ -190,8 +196,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php include_once("footer.php");?>
                 <!-- end Footer -->
         </div>
-		<script src="assets/js/vendor.min.js"></script>
-		<script src="assets/js/app.js"></script>
 
 		<script>
 		// JS Validation
@@ -275,3 +279,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <script src="assets/js/pages/dashboard.js"></script> 
 </body>
 </html>
+

@@ -72,16 +72,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-        <title>Adminto | Add Shape</title>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta charset="utf-8" />shape
+        <title>Adminto | Add </title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
         <meta content="Coderthemes" name="author" />
-
         <!-- App favicon -->
         <link rel="shortcut icon" href="assets/images/favicon.ico">
-
         <!-- Theme Config Js -->
         <script src="assets/js/config.js"></script>
 
@@ -90,9 +87,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- App css -->
         <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" id="app-style" />
-
+        <!-- Sweet alert -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <!-- Icons css -->
         <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+        <!-- Datatables css -->
+        <link href="assets/vendor/datatables/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/fixedColumns.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/fixedHeader.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <!-- Font Awseome cdn -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 		<style>
 		/* Error style */
 		.input-error {
@@ -182,9 +189,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php include_once("footer.php");?>
                 <!-- end Footer -->
         </div>
-		<script src="assets/js/vendor.min.js"></script>
-		<script src="assets/js/app.js"></script>
-
 		<script>
     // JS Validation
     const form = document.getElementById('shapeForm');

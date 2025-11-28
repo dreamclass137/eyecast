@@ -22,24 +22,51 @@ if (isset($_POST['update_variation'])) {
     $id = intval($_POST['pcolor_id']);
     $product_id = intval($_POST['product_id']);
     $color_id = intval($_POST['color_id']);
-    $f_image = $_POST['f_image'] ?? '';
-    $b_image = $_POST['b_image'] ?? '';
-    $tryon_image = $_POST['tryon_image'] ?? '';
     $stock = $_POST['stock'] ?? 'Inactive';
 
-    $update = mysqli_query($conn, "UPDATE product_colors_tbl SET
-        product_id=$product_id,
-        color_id=$color_id,
-        f_image='$f_image',
-        b_image='$b_image',
-        tryon_image='$tryon_image',
-        stock='$stock'
-        WHERE pcolor_id=$id");
+    // FETCH OLD DATA
+    $old = mysqli_fetch_assoc(mysqli_query($conn,
+        "SELECT * FROM product_colors_tbl WHERE pcolor_id=$id"
+    ));
+
+    // FRONT IMAGE UPLOAD
+    if(!empty($_FILES['f_image']['name'])){
+        $f_image = "uploads/" . time() . "_front_" . basename($_FILES['f_image']['name']);
+        move_uploaded_file($_FILES['f_image']['tmp_name'], $f_image);
+    } else {
+        $f_image = $old['f_image'];
+    }
+
+    // BACK IMAGE
+    if(!empty($_FILES['b_image']['name'])){
+        $b_image = "uploads/" . time() . "_back_" . basename($_FILES['b_image']['name']);
+        move_uploaded_file($_FILES['b_image']['tmp_name'], $b_image);
+    } else {
+        $b_image = $old['b_image'];
+    }
+
+    // TRYON IMAGE
+    if(!empty($_FILES['tryon_image']['name'])){
+        $tryon_image = "uploads/" . time() . "_tryon_" . basename($_FILES['tryon_image']['name']);
+        move_uploaded_file($_FILES['tryon_image']['tmp_name'], $tryon_image);
+    } else {
+        $tryon_image = $old['tryon_image'];
+    }
+
+    $update = mysqli_query($conn,
+        "UPDATE product_colors_tbl SET 
+            product_id=$product_id,
+            color_id=$color_id,
+            f_image='$f_image',
+            b_image='$b_image',
+            tryon_image='$tryon_image',
+            stock='$stock'
+        WHERE pcolor_id=$id"
+    );
 
     echo json_encode(['success' => $update ? true : false]);
     exit;
 }
-
 
 // TOGGLE STOCK via AJAX
 if (isset($_POST['toggle_stock'])) {
@@ -69,7 +96,7 @@ $sql = "SELECT pc.*, p.title AS product_name, c.color_name
         FROM product_colors_tbl pc
         JOIN product_tbl p ON pc.product_id = p.product_id
         JOIN colour_tbl c ON pc.color_id = c.color_id
-        ORDER BY pc.pcolor_id DESC";
+        ORDER BY pc.pcolor_id ASC";
 $result = mysqli_query($conn, $sql);
 ?>
 
@@ -79,31 +106,33 @@ $result = mysqli_query($conn, $sql);
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Adminto | Manage Product Variation</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Adminto | Manage Product Variation</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta content="A fully featured admin theme which can be used to build CRM, CMS, etc." name="description" />
+        <meta content="Coderthemes" name="author" />
+        <!-- App favicon -->
+        <link rel="shortcut icon" href="assets/images/favicon.ico">
+        <!-- Theme Config Js -->
+        <script src="assets/js/config.js"></script>
 
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <!-- Vendor css -->
+        <link href="assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Theme CSS -->
-    <script src="assets/js/config.js"></script>
-    <link href="assets/css/vendor.min.css" rel="stylesheet" />
-    <link href="assets/css/app.min.css" rel="stylesheet" id="app-style" />
-    <link href="assets/css/icons.min.css" rel="stylesheet" />
-
-    <!-- Datatables -->
-    <link href="assets/vendor/datatables/dataTables.bootstrap5.min.css" rel="stylesheet" />
-    <link href="assets/vendor/datatables/responsive.bootstrap5.min.css" rel="stylesheet" />
-
-    <!-- SweetAlert -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <!-- App css -->
+        <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" id="app-style" />
+        <!-- Sweet alert -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <!-- Icons css -->
+        <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+        <!-- Datatables css -->
+        <link href="assets/vendor/datatables/dataTables.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/responsive.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/fixedColumns.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/fixedHeader.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/buttons.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <link href="assets/vendor/datatables/select.bootstrap5.min.css" rel="stylesheet" type="text/css" />
+        <!-- Font Awseome cdn -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
         .switch { position: relative; display: inline-block; width: 32px; height: 16px; }
@@ -114,6 +143,15 @@ $result = mysqli_query($conn, $sql);
         input:checked + .slider:before { transform: translateX(16px); }
         td .fa-trash, td .fa-pen-to-square { color: #0d6efd; cursor: pointer; }
         td .fa-trash:hover { color: #d33; }
+		
+		.product-image {
+		width: 200px;        /* image ni width */
+		height: 200px;       /* image ni height */
+		object-fit: cover;   /* image crop thai ne square fit thay */
+		border-radius: 8px;  /* optional – smooth corners */
+		}	
+		
+		
     </style>
 </head>
 <body>
@@ -157,56 +195,84 @@ $result = mysqli_query($conn, $sql);
                                 </p>
                             </div>
                             <div class="card-body">
-							 <table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Product</th>
-                                        <th>Color</th>
-                                        <th>Front Image</th>
-                                        <th>Back Image</th>
-                                        <th>Tryon Image</th>
-                                        <th>Stock Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                <?php while($row = mysqli_fetch_assoc($result)) { ?>
-                                    <tr>
-                                        <td><?= $row['pcolor_id'] ?></td>
-                                        <td><?= htmlspecialchars($row['product_name']) ?></td>
-                                        <td><?= htmlspecialchars($row['color_name']) ?></td>
-                                        <td><?php if($row['f_image']) echo "<img src='".$row['f_image']."' />"; ?></td>
-                                        <td><?php if($row['b_image']) echo "<img src='".$row['b_image']."' />"; ?></td>
-                                        <td><?php if($row['tryon_image']) echo "<img src='".$row['tryon_image']."' />"; ?></td>
-                                        <td>
-                                            <label class="switch">
-                                                <input type="checkbox" class="stockToggle" data-id="<?= $row['pcolor_id'] ?>" <?= ($row['stock']=='Active')?'checked':'' ?>>
-                                                <span class="slider round"></span>
-                                            </label>
-                                        </td>
-                                        <td>
-                                            <a href="#" class="edit-btn"
-                                               data-id="<?= $row['pcolor_id'] ?>"
-                                               data-product="<?= $row['product_id'] ?>"
-                                               data-color="<?= $row['color_id'] ?>"
-                                               data-f_image="<?= $row['f_image'] ?>"
-                                               data-b_image="<?= $row['b_image'] ?>"
-                                               data-tryon_image="<?= $row['tryon_image'] ?>"
-                                               data-stock="<?= $row['stock'] ?>">
-                                                <i class="fa-solid fa-pen-to-square"></i>
-                                            </a>
-                                            &nbsp; | &nbsp;
-                                            <a href="#" class="delete-btn" data-id="<?= $row['pcolor_id'] ?>">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                <?php } ?>
-                                </tbody>
-                            </table>
-                             
-                            </div>
+							
+					<table id="datatable-buttons" class="table table-striped dt-responsive nowrap w-100">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Product</th>
+								<th>Color</th>
+								<th>Front Image</th>
+								<th>Back Image</th>
+								<th>Tryon Image</th>
+								<th>Stock Status</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+
+						<tbody>
+						<?php while($row = mysqli_fetch_assoc($result)) { ?>
+							<tr>
+								<td><?= $row['pcolor_id'] ?></td>
+								<td><?= htmlspecialchars($row['product_name']) ?></td>
+								<td><?= htmlspecialchars($row['color_name']) ?></td>
+
+								<!-- FRONT IMAGE -->
+								<td>
+									<?php 
+									if($row['f_image']) 
+										echo "<img src='".$row['f_image']."' class='product-image' />";
+									?>
+								</td>
+
+								<!-- BACK IMAGE -->
+								<td>
+									<?php 
+									if($row['b_image']) 
+										echo "<img src='".$row['b_image']."' class='product-image' />";
+									?>
+								</td>
+
+								<!-- TRYON IMAGE -->
+								<td>
+									<?php 
+									if($row['tryon_image']) 
+										echo "<img src='".$row['tryon_image']."' class='product-image' />";
+									?>
+								</td>
+
+								<td>
+									<label class="switch">
+										<input type="checkbox" class="stockToggle" 
+											   data-id="<?= $row['pcolor_id'] ?>" 
+											   <?= ($row['stock']=='Active')?'checked':'' ?>>
+										<span class="slider round"></span>
+									</label>
+								</td>
+
+								<td>
+									<a href="#" class="edit-btn"
+									   data-id="<?= $row['pcolor_id'] ?>"
+									   data-product="<?= $row['product_id'] ?>"
+									   data-color="<?= $row['color_id'] ?>"
+									   data-f_image="<?= $row['f_image'] ?>"
+									   data-b_image="<?= $row['b_image'] ?>"
+									   data-tryon_image="<?= $row['tryon_image'] ?>"
+									   data-stock="<?= $row['stock'] ?>">
+										<i class="fa-solid fa-pen-to-square"></i>
+									</a>
+
+									&nbsp; | &nbsp;
+
+									<a href="#" class="delete-btn" data-id="<?= $row['pcolor_id'] ?>">
+										<i class="fa-solid fa-trash"></i>
+									</a>
+								</td>
+							</tr>
+						<?php } ?>
+						</tbody>
+					</table>
+												</div>
                         </div>
                     </div> <!-- col-12 -->
                 </div> <!-- row -->
@@ -252,21 +318,24 @@ $result = mysqli_query($conn, $sql);
 						  ?>
 					  </select>
 				  </div>
+				 <div class="mb-3">
+					<label class="form-label">Front Image</label>
+					<input type="file" id="edit_f_image" name="f_image" class="form-control">
+					<div id="current_f_image_name" class="mt-2 text-muted"></div>
+				</div>
+
 				  <div class="mb-3">
-					  <label class="form-label">Front Image</label>
-					  <input type="file" id="edit_f_image" name="f_image" class="form-control">
-					  <div id="current_f_image" class="mt-2"></div>
-				  </div>
+    <label class="form-label">Back Image</label>
+    <input type="file" id="edit_b_image" name="b_image" class="form-control">
+    <div id="current_b_image_name" class="mt-2 text-muted"></div>
+</div>
+
 				  <div class="mb-3">
-					  <label class="form-label">Back Image</label>
-					  <input type="file" id="edit_b_image" name="b_image" class="form-control">
-					  <div id="current_b_image" class="mt-2"></div>
-				  </div>
-				  <div class="mb-3">
-					  <label class="form-label">Tryon Image</label>
-					  <input type="file" id="edit_tryon_image" name="tryon_image" class="form-control">
-					  <div id="current_tryon_image" class="mt-2"></div>
-				  </div>
+    <label class="form-label">Tryon Image</label>
+    <input type="file" id="edit_tryon_image" name="tryon_image" class="form-control">
+    <div id="current_tryon_image_name" class="mt-2 text-muted"></div>
+</div>
+
 				  <div class="mb-3">
 					  <label class="form-label">Stock Status</label>
 					  <select id="edit_stock" name="stock" class="form-select">
@@ -362,10 +431,15 @@ $(document).ready(function() {
         $("#edit_color_id").val($(this).data("color"));
         $("#edit_stock").val($(this).data("stock"));
 
-        // Show current images
-        $("#current_f_image").html($(this).data("f_image") ? '<img src="'+$(this).data("f_image")+'" />' : '');
-        $("#current_b_image").html($(this).data("b_image") ? '<img src="'+$(this).data("b_image")+'" />' : '');
-        $("#current_tryon_image").html($(this).data("tryon_image") ? '<img src="'+$(this).data("tryon_image")+'" />' : '');
+       // Show only image names (NO preview)
+let fimg = $(this).data("f_image");
+let bimg = $(this).data("b_image");
+let timg = $(this).data("tryon_image");
+
+$("#current_f_image_name").text(fimg ? "Current File: " + fimg.split('/').pop() : "");
+$("#current_b_image_name").text(bimg ? "Current File: " + bimg.split('/').pop() : "");
+$("#current_tryon_image_name").text(timg ? "Current File: " + timg.split('/').pop() : "");
+
 
         new bootstrap.Modal(document.getElementById('editVariationModal')).show();
     });

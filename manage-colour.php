@@ -196,10 +196,6 @@ $result = mysqli_query($conn, $display_query);
             <!-- End Page content -->
             <!-- ============================================================== -->
         </div>
-        <!-- Vendor JS -->
-		<script src="assets/js/vendor.min.js"></script>
-		<script src="assets/js/app.js"></script>
-
 		<!-- DataTables JS -->
 		<script src="assets/vendor/datatables/dataTables.min.js"></script>
 		<script src="assets/vendor/datatables/dataTables.bootstrap5.min.js"></script>
@@ -275,6 +271,8 @@ $('#edit_color_code_text').on('input', function() {
 
 });
 </script>
-
+		<!-- Vendor JS -->
+		<script src="assets/js/vendor.min.js"></script>
+		<script src="assets/js/app.js"></script>
 </body>
 </html>
